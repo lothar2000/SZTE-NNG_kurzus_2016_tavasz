@@ -121,6 +121,11 @@ public class NavigationTest {
 	private void assertPathValid(List<Integer> path, int startNodeId,
 			int destinationNodeId) {
 		assertNotNull(path);
+
+		System.out.println(pathChecker.isStartingWith(path, startNodeId)?"true":"false");
+		System.out.println(pathChecker.isEndingWith(path, destinationNodeId)?"true":"false");
+		System.out.println(pathChecker.isContinuous(path)?"true":"false");
+
 		assertTrue(pathChecker.isStartingWith(path, startNodeId)
 				&& pathChecker.isEndingWith(path, destinationNodeId)
 				&& pathChecker.isContinuous(path));

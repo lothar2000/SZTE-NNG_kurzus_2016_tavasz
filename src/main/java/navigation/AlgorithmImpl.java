@@ -2,7 +2,7 @@ package navigation;
 
 import org.w3c.dom.Element;
 
-
+import java.io.File;
 
 import java.util.*;
 
@@ -34,7 +34,8 @@ public class AlgorithmImpl implements Algorithm {
     HashMap<Element, Double>  tentativeGScore=new HashMap<Element, Double>();
 
 
-
+    private Element startElement;
+    private Element destElement;
 
 
 
@@ -43,16 +44,22 @@ public class AlgorithmImpl implements Algorithm {
 
 	public LinkedList<Element> aStar(Element start, Element goal) {
 
+        Element s=start;
+
+        LinkedList<Element> returnList = null;
+
         Element current;
 
         Comparator<Element> comparator=new FScoreComparator();
 
         PriorityQueue<Element> priorityQueueFScore = new PriorityQueue<Element>(100, comparator);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+        priorityQueueFScore.add(s);
+
 		while(!priorityQueueFScore.isEmpty()) {
             current=priorityQueueFScore.poll();
-
-            if(current.equals(goal)) {  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!lehet hogy ==
+            System.out.println("current ID: " + current.getAttribute("id") + ", goal ID: " + goal.getAttribute("id") + "\n");
+            if(current.getAttribute("id").equals(goal.getAttribute("id"))) {  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!lehet hogy ==
                 return reconstructPath(cameFrom,current);
             }
 
@@ -60,8 +67,8 @@ public class AlgorithmImpl implements Algorithm {
 
             closedSet.add(current);
 
-            if(current.equals(start)) {  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!lehet hogy ==
-                cameFrom.put(current, null); //nemtom már lehet e bele null-t rakni
+            if(current.getAttribute("id").equals(start.getAttribute("id"))) {  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!lehet hogy ==
+                cameFrom.put(current, null); //!!!!!!!!!!!!!nemtom már lehet e bele null-t rakni
                 gScore.put(current,0.0);
                 fScore.put(current,airDistance(current,goal));
             }
@@ -91,7 +98,7 @@ public class AlgorithmImpl implements Algorithm {
                 if(gScore.containsKey(neighbor)) {
                     gScore.remove(neighbor);
                 }
-                gScore.put(neighbor,tentativeGScore.get(neighbor));
+                gScore.put(neighbor,tentativeGScore.get(neighbor));  //LEHET MÉG KULCSDUPLIKÁLÓDÁS!!!!!!!
 
 
                 tentativeGScore.remove(neighbor);
@@ -99,7 +106,7 @@ public class AlgorithmImpl implements Algorithm {
                 if (fScore.containsKey(neighbor)) {
                     fScore.remove(neighbor);
                 }
-                fScore.put(neighbor,airDistance(neighbor,goal));
+                fScore.put(neighbor,gScore.get(neighbor)+airDistance(neighbor,goal));
 
                 priorityQueueFScore.add(neighbor);
 
@@ -112,47 +119,35 @@ public class AlgorithmImpl implements Algorithm {
 	}
 
 
-    /*public double heuristic_cost_estimate(Element A, Element B) {
-
-    }*/
-
 
     public double airDistance(Element A, Element B) {
-        double xA = Double.parseDouble(A.getLastChild().getTextContent()); //x coordinate of A element
-        double yA = Double.parseDouble(A.getFirstChild().getTextContent()); //y coordinate of A element
-        double xB = Double.parseDouble(B.getLastChild().getTextContent()); //x coordinate of B element
-        double yB = Double.parseDouble(B.getFirstChild().getTextContent()); //y coordinate of B// element
+        double xA = Double.parseDouble(A.getChildNodes().item(3).getTextContent()); //x coordinate of A element
+        double yA = Double.parseDouble(A.getChildNodes().item(1).getTextContent()); //y coordinate of A element
+        double xB = Double.parseDouble(B.getChildNodes().item(3).getTextContent()); //x coordinate of B element
+        double yB = Double.parseDouble(B.getChildNodes().item(1).getTextContent()); //y coordinate of B// element
         return sqrt(pow(xB - xA, 2.0) + pow(yB - yA, 2.0));
     }
 
-	public int gCalculator(Element current) {
-		//TODO
-		return 0;
-	}
 
-	public int fCalculator(Element current) {
-		//TODO
-		return 0;
-	}
 
-    public LinkedList<Element> neighbors(Element base) { //az olyan élek endNode-jait tárolom el, amelyek startNode-ja a base
-        //tehát ahová közvetlenük el lehet jutni a base-ből, ez a List TELJESEN RENDEZETLEN!!!!!
+    public LinkedList<Element> neighbors(Element base) {
         LinkedList<Element> neighborList=new LinkedList<Element>();
+
+
+        File f=new File("graph.xml");
+        gi.initializeFromFile(f);
+
         LinkedList<Element> edgeList= gi.getEdgeList();
-        LinkedList<Element> nodeList= gi.getNodeList();
 
         for (Element e:edgeList) {
-            Element firstChild = (Element) e.getFirstChild();
+            Element g;
+            Element firstChild=(Element)e.getChildNodes().item(1);
+            System.out.println(base.getAttribute("id") +  " ? " + firstChild.getTextContent() + "\n");
             if (base.getAttribute("id").equals(firstChild.getTextContent())) { //!!!!!!!!!!!!!!!!!!ide lehet hogy == kell
-                ((LinkedList<Element>) e.getChildNodes()).stream().filter(f -> f.getAttribute("name").equals("endNode")).forEachOrdered(f -> { // !!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    for (Element g : nodeList) {
-                        if (f.getTextContent().equals(g.getAttribute("id"))) {
-                            neighborList.add(g);
-                        }
-                    }
-                });
-            }
+                g=(Element)e.getChildNodes().item(3);
 
+                neighborList.add(gi.getNodeMap().get(Integer.parseInt(g.getTextContent())));
+            }
         }
 
         return neighborList;
@@ -163,15 +158,21 @@ public class AlgorithmImpl implements Algorithm {
         Element actual=current;
 
         LinkedList<Element> path=new LinkedList<Element>();
+        LinkedList<Element> path_normal=new LinkedList<Element>();
 
-        path.add(current);
+
+        path.add(actual);
 
         while (cameFrom.containsKey(actual)) {
             actual= (Element) cameFrom.get(actual);
             path.add(actual);
         }
 
-        return path;
+        for(int i=path.size()-2;i>=0;i--) {  //megforditom a path-t, hogyha foreach-csel bejárom, akkor az elejétől a végéig menjek
+            path_normal.add(path.get(i));
+        }
+
+        return path_normal;
 
     }
 
@@ -194,6 +195,7 @@ public class AlgorithmImpl implements Algorithm {
 		// TODO Auto-generated method stub
 
         DistanceResultImpl dri=new DistanceResultImpl(startNodeId,destinationNodeId);
+
 
 		return dri;
 	}

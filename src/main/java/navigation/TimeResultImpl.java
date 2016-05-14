@@ -7,9 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by Joci on 2016.05.10..
+ * Created by Joci on 2016.05.12..
  */
-public class DistanceResultImpl implements DistanceResult {
+public class TimeResultImpl implements TimeResult {
 
     private AlgorithmImpl ai;
     private GraphImpl gi;
@@ -20,11 +20,7 @@ public class DistanceResultImpl implements DistanceResult {
     private Element startElement;
     private Element destElement;
 
-
-
-
-    public DistanceResultImpl(int s,int d) {
-        ai=new AlgorithmImpl();
+    public TimeResultImpl(int s,int d) {
         gi=new GraphImpl();
         File f=new File("graph.xml");
         gi.initializeFromFile(f);
@@ -37,24 +33,20 @@ public class DistanceResultImpl implements DistanceResult {
 
     }
 
-
     public List<Integer> getResultPath() {
 
         List <Integer> ResultPath=new LinkedList<Integer>();
 
-        Integer integ=new Integer(0);
-
         for (Element g:ai.aStar(startElement,destElement)) {
-            integ.valueOf(Integer.parseInt(g.getAttribute("id")));
-            ResultPath.add(integ);
+            ResultPath.add(Integer.parseInt(g.getAttribute("id")));
         }
 
         return ResultPath;
     }
 
-    public double getTravelDistanceOfResultPath() {
+    public double getTravelTimeOfResultPath() {
 
-        double sumDistance=0;
+        double timeResult=0.0;
 
         Element actual;
         Element actual2;
@@ -64,12 +56,19 @@ public class DistanceResultImpl implements DistanceResult {
             actual=gi.getNodeMap().get(getResultPath().get(i));  //!!!!!!!!!!!!!!!!!! remélem jó az Integer objektum is
 
             actual2=gi.getNodeMap().get(getResultPath().get(i+1));
+            double twoNodesAirDistance=ai.airDistance(actual, actual2);
 
-            sumDistance+=ai.airDistance(actual,actual2);
+            for(Element e:gi.getEdgeList()) {
+                if(getResultPath().get(i).equals(Integer.parseInt(e.getFirstChild().getTextContent()))
+                        && getResultPath().get(i+1).equals(Integer.parseInt(e.getChildNodes().item(1).getTextContent()))) {
+                    timeResult+=twoNodesAirDistance/Double.parseDouble(e.getLastChild().getTextContent());
+                }
+
+            }
 
         }
 
-        return sumDistance;
+        return timeResult;
 
     }
 }
