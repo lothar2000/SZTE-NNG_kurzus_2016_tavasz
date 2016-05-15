@@ -20,10 +20,13 @@ public class TimeResultImpl implements TimeResult {
     private Element startElement;
     private Element destElement;
 
-    public TimeResultImpl(int s,int d) {
-        gi=new GraphImpl();
-        File f=new File("graph.xml");
-        gi.initializeFromFile(f);
+
+
+
+    public TimeResultImpl(int s,int d, Graph graph) {
+        ai=new AlgorithmImpl();
+        gi=(GraphImpl) graph;
+        ai.preprocess(gi);
 
         this.startNodeID=s;
         this.destNodeID=d;
@@ -33,12 +36,20 @@ public class TimeResultImpl implements TimeResult {
 
     }
 
+
     public List<Integer> getResultPath() {
 
         List <Integer> ResultPath=new LinkedList<Integer>();
 
+        Integer integ=new Integer(0);
+
+
+
         for (Element g:ai.aStar(startElement,destElement)) {
-            ResultPath.add(Integer.parseInt(g.getAttribute("id")));
+            integ=Integer.valueOf(Integer.parseInt(g.getAttribute("id")));
+
+
+            ResultPath.add(integ);
         }
 
         return ResultPath;

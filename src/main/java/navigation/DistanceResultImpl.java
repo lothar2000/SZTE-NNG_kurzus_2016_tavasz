@@ -23,11 +23,10 @@ public class DistanceResultImpl implements DistanceResult {
 
 
 
-    public DistanceResultImpl(int s,int d) {
+    public DistanceResultImpl(int s,int d, Graph graph) {
         ai=new AlgorithmImpl();
-        gi=new GraphImpl();
-        File f=new File("graph.xml");
-        gi.initializeFromFile(f);
+        gi=(GraphImpl) graph;
+        ai.preprocess(gi);
 
         this.startNodeID=s;
         this.destNodeID=d;
@@ -44,10 +43,11 @@ public class DistanceResultImpl implements DistanceResult {
 
         Integer integ=new Integer(0);
 
+
+
         for (Element g:ai.aStar(startElement,destElement)) {
             integ=Integer.valueOf(Integer.parseInt(g.getAttribute("id")));
 
-            //System.out.println("integ: " + integ);
 
             ResultPath.add(integ);
         }
@@ -64,7 +64,7 @@ public class DistanceResultImpl implements DistanceResult {
 
 
         for(int i=0; i<=getResultPath().size()-2;i++) {
-            actual=gi.getNodeMap().get(getResultPath().get(i));  //!!!!!!!!!!!!!!!!!! remélem jó az Integer objektum is
+            actual=gi.getNodeMap().get(getResultPath().get(i));
 
             actual2=gi.getNodeMap().get(getResultPath().get(i+1));
 

@@ -47,8 +47,6 @@ public class GraphImpl implements Graph {
 			NodeList xmlEdgeList;
 			xmlNodeList = doc.getElementsByTagName("node");
 
-			//System.out.println("NODELIST:" + "\n");
-
 			for(int i=0;i<xmlNodeList.getLength();i++) {
 
 				Node p=xmlNodeList.item(i);
@@ -56,43 +54,16 @@ public class GraphImpl implements Graph {
 				NodeList.add(xmlNode);
 				NodeMap.put(Integer.parseInt(xmlNode.getAttribute("id")),xmlNode);
 
-				//System.out.println("NodeList" + i + ". elemenek Y-ja:" + xmlNode.getChildNodes().item(1).getTextContent() + "\n" + "id: " + xmlNode.getAttribute("id") + "\n");
 
-
-
-
-				/*Node p=xmlNodeList.item(i);
-				if(p.getNodeType()==Node.ELEMENT_NODE) {
-					Element xmlNode =(Element) p;
-					if("node".equals(xmlNode.getTagName())) {
-						NodeList.add(xmlNode);
-						NodeMap.put(Integer.parseInt(xmlNode.getAttribute("id")),xmlNode);
-					} else if("edge".equals(xmlNode.getTagName())) {
-						EdgeList.add(xmlNode);
-					}
-					/*String id=xmlNode.getAttribute("id");
-					NodeList childNodeList = xmlNode.getChildNodes();
-					for(int j=0;j<childNodeList.getLength();j++) {
-						Node n=childNodeList.item(j);
-						if(n.getNodeType()==Node.TEXT_NODE) {
-							Element coordinate = (Element) childNodeList.;
-							System.out.println("Person " + id + ": " + coordinate.getTagName() +
-							"-" + coordinate.getTextContent());
-						}
-
-					}*/
 				}
 			xmlEdgeList = doc.getElementsByTagName("edge");
 
-			//System.out.println("EDGELIST:" + "\n");
 
 			for(int j=0;j<xmlEdgeList.getLength();j++) {
 				Node p = xmlEdgeList.item(j);
 				Element xmlNode = (Element) p;
 				EdgeList.add(xmlNode);
 
-				//System.out.println("EdgeList " + j + ". elemenek Y-ja:" + EdgeList.get(j).getChildNodes().item(1).getTextContent());
-				//System.out.println("EdgeList aktualis merete: " + EdgeList.size() + "\n");
 			}
 
 		} catch (ParserConfigurationException e) {

@@ -17,7 +17,7 @@ public class AlgorithmImpl implements Algorithm {
 
     GraphImpl gi=new GraphImpl();
 
-	HashSet<Element> closedSet=new HashSet<Element>(); //NEMTOM PONTOSAN MÉG HOGY MELYIK FAJTA MAP ÉS SET KELL
+	HashSet<Element> closedSet=new HashSet<Element>();
 
     HashSet<Element> openSett=new HashSet<Element>();
 
@@ -37,6 +37,8 @@ public class AlgorithmImpl implements Algorithm {
     private Element startElement;
     private Element destElement;
 
+    private boolean hasPath=false;
+
 
 
 
@@ -50,18 +52,19 @@ public class AlgorithmImpl implements Algorithm {
 
         Element current;
 
-        Comparator<Element> comparator=new FScoreComparator();
+        Comparator<Element> comparator=new FScoreComparator(gi);
 
-        PriorityQueue<Element> priorityQueueFScore = new PriorityQueue<Element>(100, comparator);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        PriorityQueue<Element> priorityQueueFScore = new PriorityQueue<Element>(100000, comparator);
 
         priorityQueueFScore.add(s);
 
 		while(!priorityQueueFScore.isEmpty()) {
+            ((FScoreComparator)comparator).pullFScoreMap(fScore);
             current=priorityQueueFScore.poll();
 
-            //System.out.println("current ID: " + current.getAttribute("id") + ", goal ID: " + goal.getAttribute("id") + "\n");
 
-            if(current.getAttribute("id").equals(goal.getAttribute("id"))) {  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!lehet hogy ==
+            if(airDistance(current,goal)==0.0) {
+                hasPath=true;
                 return reconstructPath(cameFrom,current);
             }
 
@@ -69,13 +72,13 @@ public class AlgorithmImpl implements Algorithm {
 
             closedSet.add(current);
 
-            if(current.getAttribute("id").equals(start.getAttribute("id"))) {  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!lehet hogy ==
-                cameFrom.put(current, null); //!!!!!!!!!!!!!nemtom már lehet e bele null-t rakni
+            if(current.getAttribute("id").equals(start.getAttribute("id"))) {
+                cameFrom.put(current, null);
                 gScore.put(current,0.0);
                 fScore.put(current,airDistance(current,goal));
             }
 
-            for (Element neighbor:neighbors(current)) { //itt a neighbors eljárás sem biztos hogy jól működik
+            for (Element neighbor:neighbors(current)) {
                 if(closedSet.contains(neighbor)) {
                     continue;
                 }
@@ -88,7 +91,7 @@ public class AlgorithmImpl implements Algorithm {
                         tentativeGScore.remove(neighbor);
                         continue;
                     }
-                    priorityQueueFScore.remove(neighbor); //ez lehet hogy hülyeség
+                    priorityQueueFScore.remove(neighbor);
                 }
 
                 if(cameFrom.containsKey(neighbor)) {
@@ -100,7 +103,7 @@ public class AlgorithmImpl implements Algorithm {
                 if(gScore.containsKey(neighbor)) {
                     gScore.remove(neighbor);
                 }
-                gScore.put(neighbor,tentativeGScore.get(neighbor));  //LEHET MÉG KULCSDUPLIKÁLÓDÁS!!!!!!!
+                gScore.put(neighbor,tentativeGScore.get(neighbor));
 
 
                 tentativeGScore.remove(neighbor);
@@ -108,6 +111,8 @@ public class AlgorithmImpl implements Algorithm {
                 if (fScore.containsKey(neighbor)) {
                     fScore.remove(neighbor);
                 }
+
+
                 fScore.put(neighbor,gScore.get(neighbor)+airDistance(neighbor,goal));
 
                 priorityQueueFScore.add(neighbor);
@@ -115,7 +120,7 @@ public class AlgorithmImpl implements Algorithm {
             }
 
 		}
-
+        hasPath=false;
         return null;
 
 	}
@@ -126,7 +131,7 @@ public class AlgorithmImpl implements Algorithm {
         double xA = Double.parseDouble(A.getChildNodes().item(3).getTextContent()); //x coordinate of A element
         double yA = Double.parseDouble(A.getChildNodes().item(1).getTextContent()); //y coordinate of A element
         double xB = Double.parseDouble(B.getChildNodes().item(3).getTextContent()); //x coordinate of B element
-        double yB = Double.parseDouble(B.getChildNodes().item(1).getTextContent()); //y coordinate of B// element
+        double yB = Double.parseDouble(B.getChildNodes().item(1).getTextContent()); //y coordinate of B element
         return sqrt(pow(xB - xA, 2.0) + pow(yB - yA, 2.0));
     }
 
@@ -144,9 +149,8 @@ public class AlgorithmImpl implements Algorithm {
             Element g;
             Element firstChild=(Element)e.getChildNodes().item(1);
 
-            //System.out.println(base.getAttribute("id") +  " ? " + firstChild.getTextContent() + "\n");
 
-            if (base.getAttribute("id").equals(firstChild.getTextContent())) { //!!!!!!!!!!!!!!!!!!ide lehet hogy == kell
+            if (base.getAttribute("id").equals(firstChild.getTextContent())) {
                 g=(Element)e.getChildNodes().item(3);
 
                 neighborList.add(gi.getNodeMap().get(Integer.parseInt(g.getTextContent())));
@@ -191,6 +195,7 @@ public class AlgorithmImpl implements Algorithm {
 		// TODO Auto-generated method stub
         this.gi=(GraphImpl) graph;
 
+
 	}
 
 	@Override
@@ -198,7 +203,8 @@ public class AlgorithmImpl implements Algorithm {
 			int destinationNodeId) {
 		// TODO Auto-generated method stub
 
-        DistanceResultImpl dri=new DistanceResultImpl(startNodeId,destinationNodeId);
+        DistanceResultImpl dri=new DistanceResultImpl(startNodeId,destinationNodeId,gi);
+
 
 
 		return dri;
@@ -207,14 +213,16 @@ public class AlgorithmImpl implements Algorithm {
 	@Override
 	public TimeResult findFastestPath(int startNodeId, int destinationNodeId) {
 		// TODO Auto-generated method stub
-		return null;
+
+        TimeResultImpl tri=new TimeResultImpl(startNodeId,destinationNodeId,gi);
+		return tri;
 	}
 
 	@Override
 	public boolean hasPath(int startNodeId, int destinationNodeId) {
 		// TODO Auto-generated method stub
-
-		return false;
+        aStar(gi.getNodeMap().get(Integer.valueOf(startNodeId)),gi.getNodeMap().get(Integer.valueOf(destinationNodeId)));
+		return hasPath;
 	}
 
 }
