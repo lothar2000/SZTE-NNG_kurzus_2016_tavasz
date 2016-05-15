@@ -45,7 +45,10 @@ public class DistanceResultImpl implements DistanceResult {
         Integer integ=new Integer(0);
 
         for (Element g:ai.aStar(startElement,destElement)) {
-            integ.valueOf(Integer.parseInt(g.getAttribute("id")));
+            integ=Integer.valueOf(Integer.parseInt(g.getAttribute("id")));
+
+            //System.out.println("integ: " + integ);
+
             ResultPath.add(integ);
         }
 

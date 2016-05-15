@@ -46,14 +46,17 @@ public class GraphImpl implements Graph {
 			NodeList xmlNodeList;
 			NodeList xmlEdgeList;
 			xmlNodeList = doc.getElementsByTagName("node");
-			System.out.println("NODELIST:" + "\n");
+
+			//System.out.println("NODELIST:" + "\n");
+
 			for(int i=0;i<xmlNodeList.getLength();i++) {
 
 				Node p=xmlNodeList.item(i);
 				Element xmlNode =(Element) p;
 				NodeList.add(xmlNode);
 				NodeMap.put(Integer.parseInt(xmlNode.getAttribute("id")),xmlNode);
-				System.out.println("NodeList" + i + ". elemenek Y-ja:" + xmlNode.getChildNodes().item(1).getTextContent() + "\n" + "id: " + xmlNode.getAttribute("id") + "\n");
+
+				//System.out.println("NodeList" + i + ". elemenek Y-ja:" + xmlNode.getChildNodes().item(1).getTextContent() + "\n" + "id: " + xmlNode.getAttribute("id") + "\n");
 
 
 
@@ -80,13 +83,16 @@ public class GraphImpl implements Graph {
 					}*/
 				}
 			xmlEdgeList = doc.getElementsByTagName("edge");
-			System.out.println("EDGELIST:" + "\n");
+
+			//System.out.println("EDGELIST:" + "\n");
+
 			for(int j=0;j<xmlEdgeList.getLength();j++) {
 				Node p = xmlEdgeList.item(j);
 				Element xmlNode = (Element) p;
 				EdgeList.add(xmlNode);
-				System.out.println("EdgeList " + j + ". elemenek Y-ja:" + EdgeList.get(j).getChildNodes().item(1).getTextContent());
-				System.out.println("EdgeList aktualis merete: " + EdgeList.size() + "\n");
+
+				//System.out.println("EdgeList " + j + ". elemenek Y-ja:" + EdgeList.get(j).getChildNodes().item(1).getTextContent());
+				//System.out.println("EdgeList aktualis merete: " + EdgeList.size() + "\n");
 			}
 
 		} catch (ParserConfigurationException e) {

@@ -58,7 +58,9 @@ public class AlgorithmImpl implements Algorithm {
 
 		while(!priorityQueueFScore.isEmpty()) {
             current=priorityQueueFScore.poll();
-            System.out.println("current ID: " + current.getAttribute("id") + ", goal ID: " + goal.getAttribute("id") + "\n");
+
+            //System.out.println("current ID: " + current.getAttribute("id") + ", goal ID: " + goal.getAttribute("id") + "\n");
+
             if(current.getAttribute("id").equals(goal.getAttribute("id"))) {  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!lehet hogy ==
                 return reconstructPath(cameFrom,current);
             }
@@ -134,15 +136,16 @@ public class AlgorithmImpl implements Algorithm {
         LinkedList<Element> neighborList=new LinkedList<Element>();
 
 
-        File f=new File("graph.xml");
-        gi.initializeFromFile(f);
+
 
         LinkedList<Element> edgeList= gi.getEdgeList();
 
         for (Element e:edgeList) {
             Element g;
             Element firstChild=(Element)e.getChildNodes().item(1);
-            System.out.println(base.getAttribute("id") +  " ? " + firstChild.getTextContent() + "\n");
+
+            //System.out.println(base.getAttribute("id") +  " ? " + firstChild.getTextContent() + "\n");
+
             if (base.getAttribute("id").equals(firstChild.getTextContent())) { //!!!!!!!!!!!!!!!!!!ide lehet hogy == kell
                 g=(Element)e.getChildNodes().item(3);
 
@@ -186,6 +189,7 @@ public class AlgorithmImpl implements Algorithm {
 	@Override
 	public void preprocess(Graph graph) {
 		// TODO Auto-generated method stub
+        this.gi=(GraphImpl) graph;
 
 	}
 

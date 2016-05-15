@@ -53,7 +53,9 @@ public class PathChecker {
 
 	public boolean isStartingWith(List<Integer> path, int startNodeId) {
 		if (!path.isEmpty()) {
-			System.out.println("a pathban levo: " + path.get(path.size() - 1) + ", es a parameterben kapott: " + "\n");
+
+			//System.out.println("a pathban levo: " + path.get(path.size() - 1) + ", es a parameterben kapott: " + "\n");
+
 			return path.get(0) == startNodeId;
 		}
 		return false;

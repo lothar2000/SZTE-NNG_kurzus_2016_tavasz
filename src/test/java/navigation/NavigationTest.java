@@ -82,8 +82,12 @@ public class NavigationTest {
 	private void shortestPathTest(final int startNodeId, final int destinationNodeId,
 			final double optimum) {
 		navigation = createNavigation();
+
 		DistanceResult result = navigation.findShortestPath(startNodeId,
 				destinationNodeId);
+
+		//System.out.println(result.getResultPath().get(0));
+
 		assertShortestPathValid(result, startNodeId, destinationNodeId, optimum);
 	}
 	
@@ -122,9 +126,9 @@ public class NavigationTest {
 			int destinationNodeId) {
 		assertNotNull(path);
 
-		System.out.println(pathChecker.isStartingWith(path, startNodeId)?"true":"false");
-		System.out.println(pathChecker.isEndingWith(path, destinationNodeId)?"true":"false");
-		System.out.println(pathChecker.isContinuous(path)?"true":"false");
+		//System.out.println(pathChecker.isStartingWith(path, startNodeId)?"true":"false");
+		//System.out.println(pathChecker.isEndingWith(path, destinationNodeId)?"true":"false");
+		//System.out.println(pathChecker.isContinuous(path)?"true":"false");
 
 		assertTrue(pathChecker.isStartingWith(path, startNodeId)
 				&& pathChecker.isEndingWith(path, destinationNodeId)
